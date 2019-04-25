@@ -105,3 +105,37 @@ Diversos clientes podem ser iniciados em paralelo e contactando o mesmo servidor
   enquanto o mesmo estiver executando.
 + Todas as portas usadas na comunicação são especificadas
   via arquivos de configuração.
+
+## Git
+
+Comandos
+
+`git status`: Verifica os arquivos do git, se tem alguma modificação.
+
+Como Subir modificações
+
+1. Dê `git status` pra ve se tem aluma modificação para subir
+2. Dê `git add --all` para subir todos as modificações que foram listadas no `git status`
+   + As modificações estarão no *Stagin Area local*
+3. Dê `git commit -m "msg"`, em `msg` troque pela mensagem que explica o seu commit
+   + Exemplo: `git commit -m "First Commit"`
+   + Com isso, você mudou sua branch
+4. Dê `git push` para subir suas modificações para o repositório, ou seja, para o site do git (assim todos poderão baixar e atualizar as suas branch)
+
+**Como atualizar sua branch**
+
++ Dê `git pull`, se houver alguma moficação na branch no remote (no site) entâo será baixada na sua máquina localmente
+
+  **Caso der problema no git pull**
+
++ **CASO EDR ERRO E APRACEÇA `CONFLIT`** **ENTAO QUER DIZER QUE DEU CONFLITO ENTRE SUA BRANCH E A REMOTE, PROCURE ENTÃO RESOLVER ISSO. UM EXEMPLO É O `kdiff3`** **UMA FERRAMENTA PARA RESOLVER CONFLITO DE GIT**
+
++ OBS: Alguns editored e IDE mais modernos possuem mecanismos para tentar resolver, ou, pelo menos mostrar onde deu conflito
+
+**Branch**
+
++ Caso queira uma branch (ramo) de desenvolvimento só para você, utilize `git checkout -b nome_da_branch` , ela será local e até você subila, assim você pode fazer seus push sem se preocupar em dar conflito com outras pessoas
++ `git merge branch_name` : Junta sua branch, a que você está com a `branch_name`. SUa branch receberá de  `branch_name`
++ `git branch`: lista as branchs locias e em qual você está
++ `git checkout branch_name`: troca sua branch para `branch_name`,
+  + **ISSO MUDA TODOS OS SEUS ARQUIVOS LOCAL, MAS AS COISAS DE SUA BRANCH FICARÃO GUARDADAS, BASTA VOLTAR A BRANCH**
