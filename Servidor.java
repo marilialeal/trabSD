@@ -1,13 +1,19 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Map;
+import java.util.Arrays;
+import java.math.BigInteger;
+import java.util.Scanner;
+
 public class Servidor extends Thread {
 
 	// Parte que controla as conexões por meio de threads.
 	// Note que a instanciação está no main.
 	private static Vector <PrintStream> Fila_F1;
+	private Mapa mapa;
 	private Socket conexao;
-	private String opcao;
+	private int opcao;
 
 	public static void main(String args[]) {
 		// instancia o vetor de clientes conectados
@@ -37,33 +43,56 @@ public class Servidor extends Thread {
 	}
 	public Servidor(Socket s) {
 		conexao = s;
+		mapa = new Mapa();
 	}
 	// execução da thread
 	public void run() {
 		try {
 			// objetos que permitem controlar fluxo de comunicação
 			BufferedReader entrada = new BufferedReader(new	InputStreamReader(conexao.getInputStream()));
+			Scanner ler = new Scanner(System.in);
 			PrintStream saida = new PrintStream(conexao.getOutputStream());
 			// primeiramente, espera-se a opcao do servidor 
+			BigInteger chave;
+			byte[] valor;
 			while(true){
-				opcao = entrada.readLine();
+				try{
+				opcao = Integer.parseInt(entrada.readLine());
 				// agora, verifica se string recebida é valida, pois
 				// sem a conexão foi interrompida, a string é null.
 				// Se isso ocorrer, deve-se terminar a execução.
-				if (opcao == null) {return;}
-				else if (opcao == "1"){
-				}
-				else if (opcao == "2"){
-				}
-				else if (opcao == "3"){
-				}
-				else if (opcao == "4"){
-				}
-				else if (opcao == "5"){
+				System.out.println("opcao ="+opcao);
+				if (opcao == 5){
 					break;
 				}
-				System.out.println(conexao+" Opcao selecionada = "+opcao);
-				saida.println("Opcao selecionada = "+opcao);
+				else if (opcao == 1){
+					saida.println("Opcao selecionada = \n"+opcao);
+					chave= new BigInteger(entrada.readLine());
+					//System.out.println(chave);
+					//saida.println("Entre com o valor:");
+					valor= entrada.readLine().getBytes();	
+					if(mapa.create(chave, valor) == 0) saida.println("Inserido com sucesso");
+					else saida.println("Erro na insercao");
+				}
+				else if (opcao == 2){
+					saida.println("Opcao selecionada = \n"+opcao);
+					chave = new BigInteger(entrada.readLine());
+					saida.println(Arrays.toString(mapa.read(chave)));
+				}
+				else if (opcao == 3){
+					saida.println("Opcao selecionada = \n"+opcao);
+					chave= new BigInteger(entrada.readLine());
+					saida.println("Entre com o valor:");
+					valor= entrada.readLine().getBytes();	
+					if(mapa.update(chave,valor) == 0) saida.println("Atualizacao feita com sucesso");
+					else saida.println("Erro");
+				}
+				else if (opcao == 4){
+					//saida.println("Opcao selecionada = "+opcao+"Entre com a chave:");
+					chave= new BigInteger(entrada.readLine());
+					if(mapa.delete(chave) == 0) saida.println("Exclusao feita com sucesso");
+					else saida.println("Erro");
+				}
 				// Uma vez que se tem um cliente conectado
 				// coloca-se fluxo de saída para esse cliente no vetor de
 				// clientes conectados.
@@ -74,6 +103,7 @@ public class Servidor extends Thread {
 				// simultâneos.
 				// Verificar se linha é null (conexão interrompida)
 				// Se não for nula, pode-se compará-la com métodos string
+				}catch(NumberFormatException e){}
 			}
 			// Uma vez que o cliente enviou linha em branco, retira-se
 			// fluxo de saída do vetor de clientes e fecha-se conexão.
@@ -84,5 +114,47 @@ public class Servidor extends Thread {
 			// Caso ocorra alguma excessão de E/S, mostre qual foi.
 			System.out.println("IOException: " + e);
 		}
+	}
+}
+
+class Mapa{
+   
+	private Map<BigInteger, byte[]> mapa;
+
+	public Mapa(){
+	    	this.mapa = new HashMap<>();
+	}
+	 
+	public boolean existe(BigInteger o1) {
+	    	if (mapa.get(o1) == null) return false;
+			else return true;
+	}
+
+	public int create(BigInteger o1, byte[] o2){
+		if (!existe(o1)){
+			mapa.put(o1,o2);
+			return 0;
+		}else return -1;
+	}
+	
+  	public int update(BigInteger o1, byte[] o2){
+		if(existe(o1)){
+			mapa.remove(o1);
+			mapa.put(o1,o2);
+			return 0;		
+		}
+		else return 1;
+	}
+
+	public int delete(BigInteger o1){
+		if(existe(o1)){
+			mapa.remove(o1);
+			return 0;		
+		}
+		else return 1;
+	}
+	
+	public byte[] read(BigInteger o1){
+		return mapa.get(o1);
 	}
 }
